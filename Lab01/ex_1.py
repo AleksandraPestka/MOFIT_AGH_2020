@@ -16,12 +16,10 @@ def bisection_method(f, a, b, n_iter):
     points_buffer = []
 
     if f(a)*f(b) >= 0:
-        print("Failed!")
+        print("[INFO] Failed!")
 
     for _ in np.arange(1, n_iter+1):
         m = (a+b)/2 # mid point
-
-        points_buffer.append(m)
 
         if f(a)*f(m) < 0:
             b = m
@@ -30,14 +28,16 @@ def bisection_method(f, a, b, n_iter):
             a = m
 
         elif f(m) == 0:
-            print("\nExact solution founded!")
+            print("[INFO] Exact solution founded!")
             return m, points_buffer
 
         else:
-            print("\nFailed!")
+            print("[INFO] Failed!")
             return None
 
-    print("\nToo few iteration to converge!")
+        points_buffer.append(m)
+
+    print("[INFO] Too few iteration to converge!")
     return (a+b)/2, points_buffer
 
 def newton_raphson_method(x, f, f_deriv):
@@ -52,14 +52,13 @@ def newton_raphson_method(x, f, f_deriv):
     ''' 
 
     points_buffer = []
-    points_buffer.append(x)
 
     h = f(x) / f_deriv(x)
     while f(x)!=0 and f_deriv(x)!=0:
         # update according to :  x(i+1) = x(i) - f(x) / f'(x) 
+        points_buffer.append(x)
         x = x - h
         h = f(x)/f_deriv(x)
-        points_buffer.append(x)
     
     return x, points_buffer
 
@@ -93,7 +92,9 @@ def plot_fun(fun, start, stop, converging_points, energy):
 def plot_convergence_tempo(fun, converging_points):
     y_converged = [fun(item) for item in converging_points]
     plt.figure(figsize=(10,8))
-    plt.yscale('log') # setting log scale must be before plotting
+    # setting log scale must be before plotting
+    # values x for which f(x)=0 are no allowed to plot because of log scale 
+    plt.yscale('log') 
     plt.scatter(range(len(converging_points)), np.abs(y_converged))
     plt.xlabel('Iteration')
     plt.ylabel('|f(x)|')
@@ -112,8 +113,10 @@ if __name__ == "__main__":
 
     #=============== BISECTION METHOD ==================#
 
+    print("[INFO] Bisection method ")
+
     intervals = [(-1,0), (2,4)]
-    iterations = 25
+    iterations = 100
 
     roots_buffer_bisection = []
 
@@ -129,6 +132,8 @@ if __name__ == "__main__":
     print(f"\nV(x) <= E for x in {roots_buffer_bisection}")
 
     #=============== NETWON-RAPHSON METHOD ==================#
+
+    print("\n[INFO] Newton-Raphson method ")
     
     start_points = [-0.7, 3]
     roots_buffer_newton = []
@@ -138,7 +143,6 @@ if __name__ == "__main__":
         roots_buffer_newton.append(root)
         
         plot_fun(f, interv_begin, interv_end, converged_points, E_0)
-        # TO DO: below plot doesnt plot (problem with log scale)
         plot_convergence_tempo(f, converged_points)
 
     print(f"\nV(x) <= E for x in {roots_buffer_newton}")
