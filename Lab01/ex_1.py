@@ -93,7 +93,7 @@ def plot_convergence_tempo(fun, converging_points):
     y_converged = [fun(item) for item in converging_points]
     plt.figure(figsize=(10,8))
     # setting log scale must be before plotting
-    # values x for which f(x)=0 are no allowed to plot because of log scale 
+    # values x for which f(x)=0 are not allowed to plot because of log scale 
     plt.yscale('log') 
     plt.scatter(range(len(converging_points)), np.abs(y_converged))
     plt.xlabel('Iteration')
@@ -106,9 +106,9 @@ if __name__ == "__main__":
     v_0 = 0
     E_0 = -0.6
 
-    # potential function
+    # f(x) = V(x) - E
     f = lambda x: -np.exp(-x**2) - 1.2*np.exp(-(x-2)**2) - E_0
-    # derivative of potential function
+    # derivative of f(x)
     deriv_f = lambda x: 2*x*(np.exp(-x**2)) + 2.4*(x-2)*np.exp(-(x-2)**2)
 
     #=============== BISECTION METHOD ==================#

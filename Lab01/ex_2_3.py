@@ -1,7 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def calc_position_and_velocity(V, V_deriv, time_max, delta_t, mass, v_0, x_0):
+from ex_1 import newton_raphson_method
+
+def Explicit_Euler_Method(V, V_deriv, time_max, delta_t, mass, v_0, x_0, 
+                          damping_factor=None):
     ''' Calculate x(t) and v(t) using Explicit Euler Method. '''
     
     x_buffer = []
@@ -16,9 +19,13 @@ def calc_position_and_velocity(V, V_deriv, time_max, delta_t, mass, v_0, x_0):
         x_prev = x_buffer[-1]   
         v_prev = v_buffer[-1]
 
-        # update
+        # update 
         x = x_prev + v_prev * delta_t
-        v = v_prev - V_deriv(x_prev)/m * delta_t
+
+        if damping_factor == None:
+            v = v_prev - V_deriv(x_prev)/m * delta_t
+        else:
+            v = v_prev - V_deriv(x_prev)/m * delta_t - damping_factor * v_prev * delta_t
 
         x_buffer.append(x)
         v_buffer.append(v)
@@ -92,26 +99,51 @@ if __name__ == "__main__":
 
     # initial conditions
     v_0 = 0                      # initial velocity 
-    # TO DO: load this variable from the file
-    x_0 = 2.8328820498299936     # initial position
+    E_0 = -0.6                   # initial energy
     m = 1                        # mass
 
     # potential function
     V = lambda x: -np.exp(-x**2) - 1.2*np.exp(-(x-2)**2) 
+    f = lambda x: V(x) - E_0
     # derivative of potential function
     V_deriv = lambda x: 2*x*(np.exp(-x**2)) + 2.4*(x-2)*np.exp(-(x-2)**2)
 
-    for time_max, delta_t in zip(time_limit, time_steps):
-        positions, velocities = calc_position_and_velocity(V, V_deriv, time_max, 
-                                delta_t, m, v_0, x_0)
+    # x_0 (root) calculation
+    start_point = 3
+    x_0, _ = newton_raphson_method(start_point, f, V_deriv) # initial position
 
-        time_vec = np.arange(time_max, step=delta_t)
+    #=============== EULER METHOD - NO DAMPING ==================#
 
-        plot_time_domain(positions, velocities, time_vec)
-        plot_kin_vs_potential_energy(positions, velocities, V, m, time_vec)
-        plot_sum_kin_potential_energy(positions, velocities, V, m, time_vec)
+    def Euler_Method_basic_plots(damping=None):
+        ''' Go through computations and creating plots for each configuration of
+            time limit and delta time. '''
 
+        print(f"\n[INFO] Damping factor: {damping}")
 
-    # TO DO: correct phase diagram limit time !
-    for time_max, delta_t in zip(time_limits, time_steps):
-        plot_phase_diagram(positions, velocities)
+        for time_max, delta_t in zip(time_limit, time_steps):
+            print(f"[INFO] Delta time: {delta_t}")
+
+            positions, velocities = Explicit_Euler_Method(V, V_deriv, time_max, 
+                                                        delta_t, m, v_0, x_0, damping)
+
+            time_vec = np.arange(time_max, step=delta_t)
+
+            plot_time_domain(positions, velocities, time_vec)
+            plot_kin_vs_potential_energy(positions, velocities, V, m, time_vec)
+            plot_sum_kin_potential_energy(positions, velocities, V, m, time_vec)
+
+        for time_max, delta_t in zip(time_limits, time_steps):
+            positions, velocities = Explicit_Euler_Method(V, V_deriv, time_max, 
+                            delta_t, m, v_0, x_0, damping)
+            plot_phase_diagram(positions, velocities)
+
+    Euler_Method_basic_plots()
+
+    #=============== EULER METHOD - DAMPING ==================#
+
+    time_step_damping = 0.01
+    damping_factor_list = [0.5, 5, 201]
+
+    for damping_factor in damping_factor_list:
+        # repeat computation and creating plots for each damping_factor 
+        Euler_Method_basic_plots(damping=damping_factor)
