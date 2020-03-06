@@ -1,6 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from utils import f, f_deriv, V, V_deriv
+from config import E_0, v_0
+
 def bisection_method(f, a, b, n_iter):
     '''
     Root finding method especially for non-linear equation. 
@@ -65,15 +68,15 @@ def newton_raphson_method(x, f, f_deriv):
 def plot_fun(fun, start, stop, converging_points, energy):
     x = np.linspace(start, stop, num=1000)
 
-    # y-values for function f
-    y_f =  [(fun(item)+energy) for item in x]
+    # y-values for function V(x)
+    y_V =  [fun(item) for item in x]
     # y-values for converging points
-    y_converged = [(fun(item)+energy) for item in converging_points]
+    y_converged = [fun(item) for item in converging_points]
 
     plt.figure(figsize=(10,8))
 
     # plot potential function
-    plt.plot(x, y_f, label='$V(x)$')
+    plt.plot(x, y_V, label='$V(x)$')
     # plot converging points
     plt.scatter(converged_points, y_converged, c='m')
     # plot initial energy
@@ -102,15 +105,6 @@ def plot_convergence_tempo(fun, converging_points):
     plt.show()
 
 if __name__ == "__main__":
-    # initial conditions
-    v_0 = 0
-    E_0 = -0.6
-
-    # f(x) = V(x) - E
-    f = lambda x: -np.exp(-x**2) - 1.2*np.exp(-(x-2)**2) - E_0
-    # derivative of f(x)
-    deriv_f = lambda x: 2*x*(np.exp(-x**2)) + 2.4*(x-2)*np.exp(-(x-2)**2)
-
     #=============== BISECTION METHOD ==================#
 
     print("[INFO] Bisection method ")
@@ -126,7 +120,7 @@ if __name__ == "__main__":
         
         roots_buffer_bisection.append(root)
         
-        plot_fun(f, interv_begin, interv_end, converged_points, E_0)
+        plot_fun(V, interv_begin, interv_end, converged_points, E_0)
         plot_convergence_tempo(f, converged_points)
 
     print(f"\nV(x) <= E for x in {roots_buffer_bisection}")
@@ -139,10 +133,10 @@ if __name__ == "__main__":
     roots_buffer_newton = []
 
     for value, (interv_begin, interv_end) in zip(start_points, intervals):
-        root, converged_points = newton_raphson_method(value, f, deriv_f)
+        root, converged_points = newton_raphson_method(value, f, f_deriv)
         roots_buffer_newton.append(root)
         
-        plot_fun(f, interv_begin, interv_end, converged_points, E_0)
+        plot_fun(V, interv_begin, interv_end, converged_points, E_0)
         plot_convergence_tempo(f, converged_points)
 
     print(f"\nV(x) <= E for x in {roots_buffer_newton}")

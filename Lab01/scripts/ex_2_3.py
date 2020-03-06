@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from utils import f, f_deriv, V, V_deriv
+from config import E_0, v_0, m
 from ex_1 import newton_raphson_method
 
 def Explicit_Euler_Method(V, V_deriv, time_max, delta_t, mass, v_0, x_0, 
@@ -96,17 +98,6 @@ if __name__ == "__main__":
     time_limits = [100, 1000]    # time limits for phase diagram
     time_limit = [30]            # time limit for other plots
     time_steps = [0.01, 0.001]
-
-    # initial conditions
-    v_0 = 0                      # initial velocity 
-    E_0 = -0.6                   # initial energy
-    m = 1                        # mass
-
-    # potential function
-    V = lambda x: -np.exp(-x**2) - 1.2*np.exp(-(x-2)**2) 
-    f = lambda x: V(x) - E_0
-    # derivative of potential function
-    V_deriv = lambda x: 2*x*(np.exp(-x**2)) + 2.4*(x-2)*np.exp(-(x-2)**2)
 
     # x_0 (root) calculation
     start_point = 3
