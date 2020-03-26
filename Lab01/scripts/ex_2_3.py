@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from itertools import product
 
 from utils import f, f_deriv, V, V_deriv
 from config import E_0, v_0, m
@@ -48,8 +49,8 @@ def plot_time_domain(x_t, v_t, time_vec):
     ''' Plot v(t) and x(t) on one figure. '''
 
     plt.figure(figsize=(10,8))
-    plt.plot(time_vec, x_t, label="x[m]")
     plt.plot(time_vec, v_t, label="v[m/s]")
+    plt.plot(time_vec, x_t, label="x[m]")
     plt.grid()
     plt.legend()
     plt.xlabel("t[s]")
@@ -65,43 +66,33 @@ def plot_phase_diagram(x_t, v_t):
     plt.ylabel("v[m/s]")
     plt.show()
 
-def plot_kin_vs_potential_energy(x_t, v_t, V, mass, time_vec):
+def plot_energy(x_t, v_t, V, mass, time_vec):
     ''' Plot kinetic energy and potential energy vs time. '''
-
-    kin_energy = calc_kinetic_energy(v_t, mass)
-    potential_energy = calc_potential_energy(x_t, V)
-
-    plt.figure(figsize=(10,8))
-    plt.plot(time_vec, kin_energy, label="Ek[J]")
-    plt.plot(time_vec, potential_energy, label="V[J]")
-    plt.grid()
-    plt.legend()
-    plt.xlabel("t[s]")
-    plt.show()
-
-def plot_sum_kin_potential_energy(x_t, v_t, V, mass, time_vec):
-    ''' Plot sum of kinetic and potential energy over time. '''
 
     kin_energy = calc_kinetic_energy(v_t, mass)
     potential_energy = calc_potential_energy(x_t, V)
     total_energy = [sum(item) for item in zip(kin_energy, potential_energy)]
 
     plt.figure(figsize=(10,8))
+    plt.plot(time_vec, kin_energy, label="Ek[J]")
+    plt.plot(time_vec, potential_energy, label="V[J]")
     plt.plot(time_vec, total_energy, label="Ek + V[J]")
     plt.grid()
     plt.legend()
     plt.xlabel("t[s]")
     plt.show()
 
-
 if __name__ == "__main__":
     time_limits = [100, 1000]    # time limits for phase diagram
     time_limit = [30]            # time limit for other plots
     time_steps = [0.01, 0.001]
 
+    epsilon = 10e-8 # tolerance 
+    max_iterations = 100
+
     # x_0 (root) calculation
     start_point = 3
-    x_0, _ = newton_raphson_method(start_point, f, V_deriv) # initial position
+    x_0, _ , _= newton_raphson_method(start_point, f, V_deriv, max_iterations, epsilon) # initial position
 
     #=============== EULER METHOD - NO DAMPING ==================#
 
@@ -111,8 +102,8 @@ if __name__ == "__main__":
 
         print(f"\n[INFO] Damping factor: {damping}")
 
-        for time_max, delta_t in zip(time_limit, time_steps):
-            print(f"[INFO] Delta time: {delta_t}")
+        for time_max, delta_t in product(time_limit, time_steps):
+            print(f"[INFO] Delta time: {delta_t}, max time: {time_max}")
 
             positions, velocities = Explicit_Euler_Method(V, V_deriv, time_max, 
                                                         delta_t, m, v_0, x_0, damping)
@@ -120,10 +111,10 @@ if __name__ == "__main__":
             time_vec = np.arange(time_max, step=delta_t)
 
             plot_time_domain(positions, velocities, time_vec)
-            plot_kin_vs_potential_energy(positions, velocities, V, m, time_vec)
-            plot_sum_kin_potential_energy(positions, velocities, V, m, time_vec)
+            plot_energy(positions, velocities, V, m, time_vec)
 
-        for time_max, delta_t in zip(time_limits, time_steps):
+        for time_max, delta_t in product(time_limits, time_steps):
+            print(f"[INFO] Delta time: {delta_t}, max time: {time_max}")
             positions, velocities = Explicit_Euler_Method(V, V_deriv, time_max, 
                             delta_t, m, v_0, x_0, damping)
             plot_phase_diagram(positions, velocities)

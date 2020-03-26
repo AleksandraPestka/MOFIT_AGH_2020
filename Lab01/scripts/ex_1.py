@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from utils import f, f_deriv, V, V_deriv
 from config import E_0, v_0
 
-def bisection_method(f, a, b, n_iter):
+def bisection_method(f, a, b, max_iter, epsilon):
     '''
     Root finding method especially for non-linear equation. 
     Approximate solution of f(x)=0 on interval <a,b> based on the function sign only.
@@ -13,16 +13,25 @@ def bisection_method(f, a, b, n_iter):
     f : function for which we are trying to approximate a solution f(x)=0
     a, b: float
         The interval in which to search for a solution. 
-    n_iter: int
-            Number of iteration to implement. 
+    max_iter: int
+        Number of iteration to implement. 
+    epsilon: float
+        Precision parameter. 
     '''
     points_buffer = []
 
     if f(a)*f(b) >= 0:
-        print("[INFO] Failed!")
+        print("[INFO] Interval is not right assumed!")
+        return None
 
-    for _ in np.arange(1, n_iter+1):
-        m = (a+b)/2 # mid point
+    iter_counter = 0 
+    while ((abs(a-b) > epsilon) and (iter_counter < max_iter)) :
+        # find middle point
+        m = (a+b)/2 
+
+        if abs(f(m)) <= epsilon:
+            print("[INFO] Exact solution founded!")
+            return m, points_buffer, iter_counter
 
         if f(a)*f(m) < 0:
             b = m
@@ -30,40 +39,64 @@ def bisection_method(f, a, b, n_iter):
         elif f(b)*f(m) < 0:
             a = m
 
-        elif f(m) == 0:
-            print("[INFO] Exact solution founded!")
-            return m, points_buffer
-
         else:
             print("[INFO] Failed!")
             return None
 
         points_buffer.append(m)
+        iter_counter += 1
 
-    print("[INFO] Too few iteration to converge!")
-    return (a+b)/2, points_buffer
+    print("[INFO] Exact solution NOT founded!")
+    return m, points_buffer, iter_counter
 
-def newton_raphson_method(x, f, f_deriv):
+def newton_raphson_method(x_init, f, f_deriv, max_iter, epsilon):
     '''
     Newton Raphson root finding method.
 
     Parameters:
-    x: float 
+    x_init: float 
         Point to start with.
     f: function for which we are trying to approximate a solution f(x)=0
     f_deriv: derivative of function f
+    max_iter: int
+        Number of iteration to implement. 
+    epsilon: float
+        Precision parameter. 
     ''' 
 
     points_buffer = []
+    iter_counter = 0
 
-    h = f(x) / f_deriv(x)
-    while f(x)!=0 and f_deriv(x)!=0:
+    x = x_init
+    for _ in range(max_iter):
+        if abs(f(x)) < epsilon:
+            return x, points_buffer, iter_counter
+        if f_deriv(x) == 0:
+            print('[INFO] Failed. Zero derivative.')
+            return None
+        
         # update according to :  x(i+1) = x(i) - f(x) / f'(x) 
         points_buffer.append(x)
-        x = x - h
         h = f(x)/f_deriv(x)
+        x = x - h
+        iter_counter += 1
     
-    return x, points_buffer
+    return x, points_buffer, iter_counter
+
+def basic_plot(fun, start, stop, energy):
+    """ Plot function in wide range. """
+
+    x = np.linspace(start, stop, num=1000)
+    y = [fun(item) for item in x]
+
+    plt.figure(figsize=(10,8))
+    plt.plot(x, y, label='$V(x)$')
+    plt.axhline(y=energy, color='k', label='E')
+    plt.grid()
+    plt.legend()
+    plt.xlabel('X')
+    plt.ylabel('V')
+    plt.show()
 
 def plot_fun(fun, start, stop, converging_points, energy):
     x = np.linspace(start, stop, num=1000)
@@ -105,38 +138,41 @@ def plot_convergence_tempo(fun, converging_points):
     plt.show()
 
 if __name__ == "__main__":
+
+    intervals = [(-1,0), (2,4)]
+    epsilon = 10e-8 # tolerance 
+    max_iterations = 100
+
+    # plot whole function
+    basic_plot(V, intervals[0][0], intervals[1][1], E_0)
+
+
     #=============== BISECTION METHOD ==================#
 
     print("[INFO] Bisection method ")
 
-    intervals = [(-1,0), (2,4)]
-    iterations = 100
-
-    roots_buffer_bisection = []
-
     for interv_begin, interv_end in intervals:
         # convergence time counting
-        root, converged_points = bisection_method(f, interv_begin, interv_end, iterations)
-        
-        roots_buffer_bisection.append(root)
-        
+        root, converged_points, iter_counter = \
+        bisection_method(f, interv_begin, interv_end, max_iterations, epsilon)
+
+        print(f"V(x) = E for x = {root} after {iter_counter+1} iterations. ")
+                
         plot_fun(V, interv_begin, interv_end, converged_points, E_0)
         plot_convergence_tempo(f, converged_points)
-
-    print(f"\nV(x) <= E for x in {roots_buffer_bisection}")
 
     #=============== NETWON-RAPHSON METHOD ==================#
 
     print("\n[INFO] Newton-Raphson method ")
     
     start_points = [-0.7, 3]
-    roots_buffer_newton = []
 
     for value, (interv_begin, interv_end) in zip(start_points, intervals):
-        root, converged_points = newton_raphson_method(value, f, f_deriv)
-        roots_buffer_newton.append(root)
-        
+        root, converged_points, iter_counter = \
+        newton_raphson_method(value, f, f_deriv, max_iterations, epsilon)
+
+        print(f"V(x) = E for x = {root} after {iter_counter+1} iterations. ")
+
         plot_fun(V, interv_begin, interv_end, converged_points, E_0)
         plot_convergence_tempo(f, converged_points)
 
-    print(f"\nV(x) <= E for x in {roots_buffer_newton}")
