@@ -55,3 +55,13 @@ def V_deriv(x):
 
 def V_double_deriv(x):
     return f_double_deriv(x)
+
+def calc_kinetic_energy(v_t, mass):
+    ''' Calculate kinetic energy Ek = mv^2/2 using v(t). '''
+
+    return [0.5*mass*item**2 for item in v_t]
+
+def calc_potential_energy(x_t, V):
+    ''' Calculate potential energy using x(t) and V(x). '''
+
+    return [V(x) for x in x_t]

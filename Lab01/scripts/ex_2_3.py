@@ -2,7 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from itertools import product
 
-from utils import f, f_deriv, V, V_deriv
+from utils_calc import f, f_deriv, V, V_deriv
+from utils_plot import plot_energy, plot_phase_diagram, plot_time_domain
 from config import E_0, v_0, m
 from ex_1 import newton_raphson_method
 
@@ -34,53 +35,6 @@ def Explicit_Euler_Method(V, V_deriv, time_max, delta_t, mass, v_0, x_0,
         v_buffer.append(v)
 
     return x_buffer, v_buffer 
-
-def calc_kinetic_energy(v_t, mass):
-    ''' Calculate kinetic energy Ek = mv^2/2 using v(t). '''
-
-    return [0.5*mass*item**2 for item in v_t]
-
-def calc_potential_energy(x_t, V):
-    ''' Calculate potential energy using x(t) and V(x). '''
-
-    return [V(x) for x in x_t]
-
-def plot_time_domain(x_t, v_t, time_vec):
-    ''' Plot v(t) and x(t) on one figure. '''
-
-    plt.figure(figsize=(10,8))
-    plt.plot(time_vec, v_t, label="v[m/s]")
-    plt.plot(time_vec, x_t, label="x[m]")
-    plt.grid()
-    plt.legend()
-    plt.xlabel("t[s]")
-    plt.show()
-
-def plot_phase_diagram(x_t, v_t):
-    ''' Plot phase diagram: v(t) vs x(t).'''
-
-    plt.figure(figsize=(10,8))
-    plt.plot(x_t, v_t)
-    plt.grid()
-    plt.xlabel("x[m]")
-    plt.ylabel("v[m/s]")
-    plt.show()
-
-def plot_energy(x_t, v_t, V, mass, time_vec):
-    ''' Plot kinetic energy and potential energy vs time. '''
-
-    kin_energy = calc_kinetic_energy(v_t, mass)
-    potential_energy = calc_potential_energy(x_t, V)
-    total_energy = [sum(item) for item in zip(kin_energy, potential_energy)]
-
-    plt.figure(figsize=(10,8))
-    plt.plot(time_vec, kin_energy, label="Ek[J]")
-    plt.plot(time_vec, potential_energy, label="V[J]")
-    plt.plot(time_vec, total_energy, label="Ek + V[J]")
-    plt.grid()
-    plt.legend()
-    plt.xlabel("t[s]")
-    plt.show()
 
 if __name__ == "__main__":
     time_limits = [100, 1000]    # time limits for phase diagram

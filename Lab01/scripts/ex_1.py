@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from utils import f, f_deriv, V, V_deriv
+from utils_calc import f, f_deriv, V, V_deriv
+from utils_plot import basic_plot, plot_fun, plot_convergence_tempo
 from config import E_0, v_0
 
 def bisection_method(f, a, b, max_iter, epsilon):
@@ -82,60 +83,6 @@ def newton_raphson_method(x_init, f, f_deriv, max_iter, epsilon):
         iter_counter += 1
     
     return x, points_buffer, iter_counter
-
-def basic_plot(fun, start, stop, energy):
-    """ Plot function in wide range. """
-
-    x = np.linspace(start, stop, num=1000)
-    y = [fun(item) for item in x]
-
-    plt.figure(figsize=(10,8))
-    plt.plot(x, y, label='$V(x)$')
-    plt.axhline(y=energy, color='k', label='E')
-    plt.grid()
-    plt.legend()
-    plt.xlabel('X')
-    plt.ylabel('V')
-    plt.show()
-
-def plot_fun(fun, start, stop, converging_points, energy):
-    x = np.linspace(start, stop, num=1000)
-
-    # y-values for function V(x)
-    y_V =  [fun(item) for item in x]
-    # y-values for converging points
-    y_converged = [fun(item) for item in converging_points]
-
-    plt.figure(figsize=(10,8))
-
-    # plot potential function
-    plt.plot(x, y_V, label='$V(x)$')
-    # plot converging points
-    plt.scatter(converged_points, y_converged, c='m')
-    # plot initial energy
-    plt.axhline(y=energy, color='k', label='E')
-
-    # annotations (numerate each converged point)
-    for index, (xs, ys) in enumerate(zip(converging_points, y_converged)):
-        plt.annotate(index, (xs, ys), ha='right')
-
-    plt.legend()
-    plt.xlabel('X')
-    plt.ylabel('V')
-    plt.grid()
-    plt.show()
-
-def plot_convergence_tempo(fun, converging_points):
-    y_converged = [fun(item) for item in converging_points]
-    plt.figure(figsize=(10,8))
-    # setting log scale must be before plotting
-    # values x for which f(x)=0 are not allowed to plot because of log scale 
-    plt.yscale('log') 
-    plt.scatter(range(len(converging_points)), np.abs(y_converged))
-    plt.xlabel('Iteration')
-    plt.ylabel('|f(x)|')
-    plt.grid()
-    plt.show()
 
 if __name__ == "__main__":
 

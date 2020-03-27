@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from utils import V, V_deriv, V_double_deriv
-from config import E_0, v_0, m
+from utils_calc import (V, V_deriv, V_double_deriv, 
+                        calc_kinetic_energy, calc_potential_energy)
+from config import v_0, m
 
 def trapezoidal_method(x_init, v_init, delta_time, alpha, max_iter, epsilon):
     """
