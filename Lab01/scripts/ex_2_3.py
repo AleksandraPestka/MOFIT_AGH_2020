@@ -8,7 +8,7 @@ from config import E_0, v_0, m
 from ex_1 import newton_raphson_method
 
 def Explicit_Euler_Method(V, V_deriv, time_max, delta_t, mass, v_0, x_0, 
-                          damping_factor=None):
+                          damping_factor):
     ''' Calculate x(t) and v(t) using Explicit Euler Method. '''
     
     x_buffer = []
@@ -25,11 +25,7 @@ def Explicit_Euler_Method(V, V_deriv, time_max, delta_t, mass, v_0, x_0,
 
         # update 
         x = x_prev + v_prev * delta_t
-
-        if damping_factor == None:
-            v = v_prev - V_deriv(x_prev)/m * delta_t
-        else:
-            v = v_prev - V_deriv(x_prev)/m * delta_t - damping_factor * v_prev * delta_t
+        v = v_prev - V_deriv(x_prev)/m * delta_t - damping_factor * v_prev * delta_t
 
         x_buffer.append(x)
         v_buffer.append(v)
@@ -50,7 +46,7 @@ if __name__ == "__main__":
 
     #=============== EULER METHOD - NO DAMPING ==================#
 
-    def Euler_Method_basic_plots(damping=None):
+    def Euler_Method_basic_plots(damping):
         ''' Go through computations and creating plots for each configuration of
             time limit and delta time. '''
 
@@ -73,7 +69,7 @@ if __name__ == "__main__":
                             delta_t, m, v_0, x_0, damping)
             plot_phase_diagram(positions, velocities)
 
-    Euler_Method_basic_plots()
+    Euler_Method_basic_plots(damping=0)
 
     #=============== EULER METHOD - DAMPING ==================#
 
