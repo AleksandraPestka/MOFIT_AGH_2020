@@ -5,7 +5,7 @@ import pandas as pd
 
 from config import *
 from utils_calc import v_deriv
-from utils_plot import plot_location, plot_time_domain
+from plotting import plot_location, plot_time_domain
 
 def Explicit_Euler_Method(time_max, delta_t, 
                           x_init, y_init, 
@@ -43,19 +43,21 @@ def Explicit_Euler_Method(time_max, delta_t,
                                     'x': (x/au), 
                                     'y': (y/au)}, ignore_index=True)
 
-    return buffer 
+    buffer.to_csv(f'../data/ex1_dt_{delta_t}.csv', index=False)
+    return buffer
 
 if __name__ == "__main__":
     orbital_period = 75
     sec_in_year = 365.25*24*60*60
     number_lap = 3
 
-    delta_time = 150
+    delta_time = 60*2
     max_time = number_lap * orbital_period * sec_in_year
 
     dataframe = Explicit_Euler_Method(max_time, delta_time, 
-                                     x_0, y_0, 
-                                     vx_0, vy_0, 
-                                     sec_in_year)
+                            x_0, y_0, 
+                            vx_0, vy_0, 
+                            sec_in_year)
+
     plot_location(dataframe['x'], dataframe['y'])
     plot_time_domain(dataframe['y'], dataframe['t'])
