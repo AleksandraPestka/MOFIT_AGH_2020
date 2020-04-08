@@ -20,8 +20,24 @@ def plot_location(x_t, y_t):
     plt.xlabel("x[au]")
     plt.show()
 
-if __name__ == '__main__':
-    dataframe = pd.read_csv('../data/ex2_dt_3600.csv', header=0)
+def plot_dt_vs_r(r, dt):
+    plt.figure(figsize=(8,6))
+    plt.plot(r, dt, label=r'$dt(\sqrt{x^2+y^2})$')
+    plt.grid()
+    plt.legend()
+    plt.ylabel("dt[s]")
+    plt.xlabel("r[au]")
+    plt.show()
 
-    plot_location(dataframe['x'], dataframe['y'])
-    plot_time_domain(dataframe['y'], dataframe['t'])
+if __name__ == '__main__':
+    file_paths = ['../data/ex2_dt_120.csv',
+                '../data/ex3_tol_1000.csv',
+                '../data/ex3_tol_10.csv']
+
+    for path in file_paths:
+        dataframe = pd.read_csv(path, header=0)
+        plot_location(dataframe['x'], dataframe['y'])
+        plot_time_domain(dataframe['y'], dataframe['t'])
+
+        if 'tol' in path:
+            plot_dt_vs_r(dataframe['r'], dataframe['dt'])

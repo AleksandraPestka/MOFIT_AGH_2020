@@ -43,7 +43,6 @@ def Explicit_Euler_Method(time_max, delta_t,
                                     'x': (x/au), 
                                     'y': (y/au)}, ignore_index=True)
 
-    buffer.to_csv(f'../data/ex1_dt_{delta_t}.csv', index=False)
     return buffer
 
 if __name__ == "__main__":
@@ -58,6 +57,8 @@ if __name__ == "__main__":
                             x_0, y_0, 
                             vx_0, vy_0, 
                             sec_in_year)
+
+    dataframe.to_csv(f'../data/ex1_dt_{delta_time}.csv', index=False)
 
     plot_location(dataframe['x'], dataframe['y'])
     plot_time_domain(dataframe['y'], dataframe['t'])
