@@ -7,8 +7,8 @@ import pandas as pd
 from config import *
 from utils_calc import v_deriv
 
-def Explicit_Euler_Method_auto_dt(delta_t,
-                                    tolerance, save_param,
+def Explicit_Euler_Method_auto_dt(n_years, delta_t,
+                                    tolerance, c,
                                     x_init, y_init, 
                                     vx_init, vy_init, 
                                     sec_in_year):
@@ -26,14 +26,11 @@ def Explicit_Euler_Method_auto_dt(delta_t,
     # total time
     time_sum = 0    
 
-    # maximum number of years
-    max_num_years = 75*3
-
     with open(f'../data/ex3_tol_{tolerance}.csv',"w+") as tmp_file:
         wr = csv.writer(tmp_file, quoting=csv.QUOTE_NONE)
         wr.writerow(['t', 'x', 'y', 'dt', 'r'])
 
-        while time_sum < max_num_years:
+        while time_sum < n_years:
             # calculations with dt
             x_next = x + vx*delta_t
             y_next = y + vy*delta_t
@@ -88,13 +85,14 @@ if __name__ == '__main__':
     orbital_period = 75
     sec_in_year = 365.25*24*60*60
     number_lap = 3
-    delta_time = 900 # 60*2
-    max_time = number_lap * orbital_period * sec_in_year
+    delta_time = 900 
+    years = number_lap * orbital_period
 
     tol = 10 # tolerance
     c = 0.9 # safety param
 
-    Explicit_Euler_Method_auto_dt(delta_time, 
+    Explicit_Euler_Method_auto_dt(years, 
+                                delta_time, 
                                 tol, c, 
                                 x_0, y_0, 
                                 vx_0, vy_0, 

@@ -8,11 +8,13 @@ from config import *
 from utils_calc import v_deriv
 
 def rk4_method(dt, n, u, f):
+    ''' Apply 4th order Runge Kutta Formulas to find next value of u matrix '''
     k1 = f(u)
     k2 = f(u + dt/2 * k1)
     k3 = f(u + dt/2 * k2)
     k4 = f(u + dt * k3)
 
+    # update value of u matrix
     u = u + dt/6 * (k1 + 2*k2 + 2*k3 + k4)
     return u
 

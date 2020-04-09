@@ -59,6 +59,3 @@ if __name__ == "__main__":
                             sec_in_year)
 
     dataframe.to_csv(f'../data/ex1_dt_{delta_time}.csv', index=False)
-
-    plot_location(dataframe['x'], dataframe['y'])
-    plot_time_domain(dataframe['y'], dataframe['t'])
