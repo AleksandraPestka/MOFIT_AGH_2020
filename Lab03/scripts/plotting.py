@@ -1,6 +1,4 @@
 import matplotlib.pyplot as plt
-from matplotlib import cm
-from scipy.interpolate import griddata
 import pandas as pd
 import numpy as np
 
@@ -13,10 +11,16 @@ def plot_u(x, t, u):
     plt.ylabel('t[s]')
     plt.show()
 
+def plot_energy(om, E):
+    plt.figure()
+    plt.plot(om, E)
+    plt.xlabel(r'$\omega (t) [\pi \: rad]$')
+    plt.ylabel(r'$<E> [J]$')
+    plt.grid()
+    plt.show()
+
 if __name__ == '__main__':
-    df = pd.read_csv('../data/ex3.csv', header=0)
-    #df = pd.read_fwf('file:///home/alexandra/Desktop/Studia/semestr_6/MOFIT/Materialy_Kuby/Proejkt3/zad3.txt')
-    #df.columns = ['x', 't', 'u']
-    plot_u(df['x'], df['t'], df['u'])
+    df = pd.read_csv('../data/ex4.csv', header=None)
+    plot_energy(df.iloc[:, 0], df.iloc[:, 1])
 
     # [INFO] while plotting ex3.csv remove vmin and vmax from plt.scatter
